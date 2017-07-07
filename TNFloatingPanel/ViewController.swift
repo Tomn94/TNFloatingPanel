@@ -22,24 +22,12 @@ class ViewController: UIViewController {
         panelController.addTo(parent: self)
         
         /* Position Panel on this view controller */
-        let panel = panelController.panel
-        panel.translatesAutoresizingMaskIntoConstraints = false
-        if #available(iOS 11.0, *) {
-            let guide = self.view.safeAreaLayoutGuide
-            NSLayoutConstraint.activate([
-                panel.topAnchor.constraintEqualToSystemSpacingBelow(guide.topAnchor, multiplier: 1),
-                panel.leadingAnchor.constraintEqualToSystemSpacingAfter(guide.leadingAnchor, multiplier: 1)
-            ])
-        } else {
-            NSLayoutConstraint.activate([
-                panel.topAnchor.constraint(equalTo: self.topLayoutGuide.bottomAnchor, constant: 10),
-                panel.leadingAnchor.constraint(equalTo: self.view.layoutMarginsGuide.leadingAnchor, constant: 10)
-            ])
-        }
-        NSLayoutConstraint.activate([
-            panel.widthAnchor.constraint(equalToConstant: 320),
-            panel.heightAnchor.constraint(equalToConstant: 328)
-        ])
+        panelController.pinTo(position: .topLeading,
+                              in: self)
+        
+        /* Set Panel size */
+        panelController.resizePanel(CGSize(width: 320,
+                                           height: 328))
     }
     
 }
