@@ -45,6 +45,9 @@ open class FloatingPanel: UIVisualEffectView {
     open static let defaultMargins = UIEdgeInsets(top:    10, left:  10,
                                                   bottom: 10, right: 10)
     
+    /// Size of the rounded corners of the panel
+    open static let cornerRadius: CGFloat = 10
+    
     /// Available positions for the floating panel.
     /// Prefer using leading/trailing instead of left/right to support right-to-left languages
     public enum Position {
@@ -75,7 +78,7 @@ open class FloatingPanel: UIVisualEffectView {
         super.init(effect: effect)
         
         /* Add clipping rounded corners */
-        self.layer.cornerRadius = 10
+        self.layer.cornerRadius = FloatingPanel.cornerRadius
         self.clipsToBounds = true
     }
     
@@ -122,14 +125,20 @@ open class FloatingPanelController: UIViewController {
         panel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         panelContainer.addSubview(panel)
         
-        /* Creating a countainer view allows adding a shadow */
-        panelContainer.layer.shadowOpacity = 0.2
-        panelContainer.layer.shadowOffset  = .zero
-        panelContainer.clipsToBounds = false
+        /* Creating a countainer view allows adding a shadow on iOS 11 */
+        panelContainer.layer.shadowOpacity  = 0.2
+        panelContainer.layer.shadowOffset   = .zero
+        if #available(iOS 11, *) {
+        } else {
+            panelContainer.layer.shadowPath = CGPath(roundedRect:  panelContainer.bounds,
+                                                     cornerWidth:  FloatingPanel.cornerRadius,
+                                                     cornerHeight: FloatingPanel.cornerRadius,
+                                                     transform:    nil)
+        }
         
         /* Add a thin border, on the container and not the panel itself
            (the panel has clipsToBounds = false, which would make the border weird in corners) */
-        panelContainer.layer.cornerRadius = 10  // not clipped, used only by the border
+        panelContainer.layer.cornerRadius = FloatingPanel.cornerRadius  // not clipped, used only by the border
         panelContainer.layer.borderColor  = UIColor.gray.withAlphaComponent(0.5).cgColor
         panelContainer.layer.borderWidth  = 1 / UIScreen.main.scale
         
@@ -139,6 +148,18 @@ open class FloatingPanelController: UIViewController {
     
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    open override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        if #available(iOS 11, *) {
+        } else {
+            panelContainer.layer.shadowPath = CGPath(roundedRect:  panelContainer.bounds,
+                                                     cornerWidth:  FloatingPanel.cornerRadius,
+                                                     cornerHeight: FloatingPanel.cornerRadius,
+                                                     transform:    nil)
+        }
     }
     
     
