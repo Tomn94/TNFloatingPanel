@@ -195,11 +195,15 @@ open class FloatingPanelController: UIViewController {
             switch position {
             case .top, .topLeading, .topTrailing, .topLeft, .topRight:
                 vConstraints = [panelContainer.topAnchor.constraint(equalTo: guide.topAnchor,
-                                                                    constant: margins.top)]
-            case .bottom, .bottomLeading, .bottomTrailing, .bottomLeft, .bottomRight:
-                vConstraints = [panelContainer.bottomAnchor.constraint(equalTo: guide.bottomAnchor,
+                                                                    constant: margins.top),
+                                panelContainer.bottomAnchor.constraint(lessThanOrEqualTo: guide.bottomAnchor,
                                                                        constant: -margins.bottom)]
-            case .leading, .trailing, .left, .right:    // TODO: 2 constraints
+            case .bottom, .bottomLeading, .bottomTrailing, .bottomLeft, .bottomRight:
+                vConstraints = [panelContainer.topAnchor.constraint(greaterThanOrEqualTo: guide.topAnchor,
+                                                                    constant: margins.top),
+                                panelContainer.bottomAnchor.constraint(equalTo: guide.bottomAnchor,
+                                                                       constant: -margins.bottom)]
+            case .leading, .trailing, .left, .right:
                 vConstraints = [panelContainer.topAnchor.constraint(equalTo: guide.topAnchor,
                                                                     constant: margins.top),
                                 panelContainer.bottomAnchor.constraint(equalTo: guide.bottomAnchor,
@@ -211,9 +215,13 @@ open class FloatingPanelController: UIViewController {
             switch position {
             case .top, .topLeading, .topTrailing, .topLeft, .topRight:
                 vConstraints = [panelContainer.topAnchor.constraint(equalTo: parentViewController.topLayoutGuide.bottomAnchor,
-                                                                    constant: margins.top)]
+                                                                    constant: margins.top),
+                                panelContainer.bottomAnchor.constraint(lessThanOrEqualTo: parentViewController.bottomLayoutGuide.topAnchor,
+                                                                       constant: -margins.bottom)]
             case .bottom, .bottomLeading, .bottomTrailing, .bottomLeft, .bottomRight:
-                vConstraints = [panelContainer.bottomAnchor.constraint(equalTo: parentViewController.bottomLayoutGuide.topAnchor,
+                vConstraints = [panelContainer.topAnchor.constraint(greaterThanOrEqualTo: parentViewController.topLayoutGuide.bottomAnchor,
+                                                                    constant: margins.top),
+                                panelContainer.bottomAnchor.constraint(equalTo: parentViewController.bottomLayoutGuide.topAnchor,
                                                                        constant: -margins.bottom)]
             case .leading, .trailing, .left, .right:
                 vConstraints = [panelContainer.topAnchor.constraint(equalTo: parentViewController.topLayoutGuide.bottomAnchor,
@@ -234,15 +242,23 @@ open class FloatingPanelController: UIViewController {
         switch position {
         case .leading, .topLeading, .bottomLeading:
             hConstraints = [panelContainer.leadingAnchor.constraint(equalTo: guide.leadingAnchor,
-                                                                    constant: margins.left)]
-        case .trailing, .topTrailing, .bottomTrailing:
-            hConstraints = [panelContainer.trailingAnchor.constraint(equalTo: guide.trailingAnchor,
+                                                                    constant: margins.left),
+                            panelContainer.trailingAnchor.constraint(lessThanOrEqualTo: guide.trailingAnchor,
                                                                      constant: -margins.right)]
         case .left, .topLeft, .bottomLeft:
             hConstraints = [panelContainer.leftAnchor.constraint(equalTo: guide.leftAnchor,
-                                                                 constant: margins.left)]
+                                                                 constant: margins.left),
+                            panelContainer.rightAnchor.constraint(lessThanOrEqualTo: guide.rightAnchor,
+                                                                  constant: -margins.right)]
+        case .trailing, .topTrailing, .bottomTrailing:
+            hConstraints = [panelContainer.leadingAnchor.constraint(greaterThanOrEqualTo: guide.leadingAnchor,
+                                                                    constant: margins.left),
+                            panelContainer.trailingAnchor.constraint(equalTo: guide.trailingAnchor,
+                                                         constant: -margins.right)]
         case .right, .topRight, .bottomRight:
-            hConstraints = [panelContainer.rightAnchor.constraint(equalTo: guide.rightAnchor,
+            hConstraints = [panelContainer.leftAnchor.constraint(greaterThanOrEqualTo: guide.leftAnchor,
+                                                                 constant: margins.left),
+                            panelContainer.rightAnchor.constraint(equalTo: guide.rightAnchor,
                                                                   constant: -margins.right)]
         case .top, .bottom:
             hConstraints = [panelContainer.leadingAnchor.constraint(equalTo: guide.leadingAnchor,
@@ -259,13 +275,17 @@ open class FloatingPanelController: UIViewController {
     /// Width is ignored if the panel position is top or bottom.
     /// Height is ignored if the panel position is leading, left, trailing or right.
     ///
-    /// - Parameter size: New size for the panel
+    /// - Parameter size: New size for the panel.
+    ///                   Uses the width or height of the parent view controller
+    ///                   when the latter is not big enough
     open func resizeTo(_ size: CGSize) {
         
         panelContainer.removeConstraints(panelContainer.constraints)
         
         let widthConstraint  = panelContainer.widthAnchor.constraint(equalToConstant:  size.width)
         let heightConstraint = panelContainer.heightAnchor.constraint(equalToConstant: size.height)
+        widthConstraint.priority  = .defaultHigh
+        heightConstraint.priority = .defaultHigh
         
         switch panel.position {
         case .top, .bottom:
