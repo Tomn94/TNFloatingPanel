@@ -1,6 +1,6 @@
 # FloatingPanel
 
-![Version](https://img.shields.io/badge/version-1.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.1-green.svg)
 [![Code](https://img.shields.io/badge/code-Swift%204-orange.svg)](https://swift.org)
 [![Platform](https://img.shields.io/badge/platform-iOS-red.svg)](https://www.apple.com/ios/)
 [![Contributors](https://img.shields.io/badge/contributors-Thomas%20NAUDET-blue.svg)](https://twitter.com/tomn94)
@@ -35,17 +35,19 @@ let panelController = FloatingPanelController()
 /* 2. Add the Panel to its parent view controller */
 panelController.addTo(parent: parentViewController)
     
-/* 3. Position Panel on the parent */
-panelController.pinTo(position: .topLeading,
-                      in: parentViewController)
-    
-/* 4. Set Panel size */
+/* 3. Set Panel size */
 panelController.resizeTo(CGSize(width:  320,
                                 height: 328))
+    
+/* 4. Position Panel on the parent, with default margins */
+panelController.pinTo(position: .topLeading)
     
 /* 5. Set Panel content */
 let yourContentVC = UIViewController()
 panelController.setViewController(yourContentVC)
+    
+/* 6. Show Panel animated */
+panelController.showPanel()
 ```
 
 #### Blur style
@@ -69,13 +71,21 @@ Using preset positions makes sure the panel cannot be bigger than its parent, wi
 #### Margins
 
 Default margins are applied between the panel and its parent.\
-Use `pinTo(position:in:margins:)` to change them:
+Use `pinTo(position:margins:)` to change them:
 ```swift
 panelController.pinTo(position: .topLeading,
-                      in: parentViewController,
                       margins: UIEdgeInsets(top:    42, left:  21,
                                             bottom: 42, right: 21))
 ```
+
+#### Animations
+
+If you use `resizeTo(_:)` then `pinTo(position:margins:)`, the panel is hidden by default.
+
+You can display the panel by calling: `showPanel(animated:inCornerAlongXAxis:inCornerAlongYAxis:)`\
+and hide it with: `hidePanel(animated:inCornerAlongXAxis:inCornerAlongYAxis:)`
+
+*The above optional parameters can help you configure the translation animation.*
 
 #### Let me do
 
@@ -92,6 +102,17 @@ An Xcode project demonstrating `FloatingPanel` on a map is included under [Examp
 
 - Swift 4
 - iOS 9 or later
+
+
+## Release notes
+
+#### v1.1
+
+> Added spring animations to show/hide the panel (requires usage of helper methods to size and position the view)\
+> The panel is now hidden by default.
+
+#### v1.0
+> Initial version
 
 
 ## Evolution
