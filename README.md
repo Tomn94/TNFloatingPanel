@@ -21,7 +21,7 @@
 
 ## Installation
 
-Just import the file `FloatingPanel.swift` in your project.
+Just import the file `TNFloatingPanel.swift` in your project.
 
 
 ## Usage
