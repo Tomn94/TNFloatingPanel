@@ -103,6 +103,9 @@ open class FloatingPanelController: UIViewController {
     /// if you want to apply constraints/position/resize panel manually.
     open let panel: FloatingPanel
     
+    /// Current view controller displayed by the panel
+    open var viewController: UIViewController?
+    
     /// Horizontal constraints on `panelContainer` after calling `pinTo(position:in:margins:)`
     private var hConstraints = [NSLayoutConstraint]()
     
@@ -170,13 +173,24 @@ open class FloatingPanelController: UIViewController {
     /// - Parameter viewController: View controller to display in the panel
     open func setViewController(_ viewController: UIViewController) {
         
+        /* Remove any previous view controller */
+        if let previousViewController = self.viewController {
+            previousViewController.view.removeFromSuperview()
+            previousViewController.removeFromParentViewController()
+        }
+        
+        /* Set the new view controller as current */
+        self.viewController = viewController
         self.addChildViewController(viewController)
         self.panel.contentView.addSubview(viewController.view)
-        viewController.didMove(toParentViewController: self)
         
+        /* Set up frame */
         viewController.view.frame = panel.contentView.bounds
         viewController.view.translatesAutoresizingMaskIntoConstraints = true
         viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        /* Finish */
+        viewController.didMove(toParentViewController: self)
     }
     
     
