@@ -18,10 +18,10 @@ class FloatingPanelController: UIViewController {
     let panel: FloatingPanel
     
     /// Horizontal constraint on `panelContainer` after calling `pinTo(position:in:margins:)`
-    var hConstraint: NSLayoutConstraint? = nil
+    var hConstraint: NSLayoutConstraint?
     
     /// Vertical constraint on `panelContainer` after calling `pinTo(position:in:margins:)`
-    var vConstraint: NSLayoutConstraint? = nil
+    var vConstraint: NSLayoutConstraint?
     
     
     /// Instantiates a new controller and its panel
@@ -35,7 +35,7 @@ class FloatingPanelController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         
         /* Set up panel inside a container view */
-        panel.frame = panelContainer.frame
+        panel.frame = panelContainer.bounds
         panel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         panelContainer.addSubview(panel)
         
@@ -56,6 +56,21 @@ class FloatingPanelController: UIViewController {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    /// Populates the panel with specified content
+    ///
+    /// - Parameter viewController: View controller to display in the panel
+    func setViewController(_ viewController: UIViewController) {
+        
+        self.addChildViewController(viewController)
+        self.panel.contentView.addSubview(viewController.view)
+        viewController.didMove(toParentViewController: self)
+        
+        viewController.view.frame = panel.contentView.bounds
+        viewController.view.translatesAutoresizingMaskIntoConstraints = true
+        viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
     
     
