@@ -9,10 +9,10 @@
 import UIKit
 
 /// View displayed in the FloatingPanelController
-class FloatingPanel: UIVisualEffectView {
+open class FloatingPanel: UIVisualEffectView {
     
     /// Available positions for the floating panel
-    enum Position {
+    public enum Position {
         case topLeading
         case topTrailing
         case bottomLeading
@@ -27,10 +27,10 @@ class FloatingPanel: UIVisualEffectView {
     
     
     /// Current position of the floating panel
-    var position = Position.custom
+    open var position = Position.custom
     
     
-    override init(effect: UIVisualEffect?) {
+    override public init(effect: UIVisualEffect?) {
         super.init(effect: effect)
         
         /* Add clipping rounded corners */
@@ -38,7 +38,7 @@ class FloatingPanel: UIVisualEffectView {
         self.clipsToBounds = true
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
