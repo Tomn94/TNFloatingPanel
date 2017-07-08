@@ -1,6 +1,6 @@
 //
+//  FloatingPanel v1.1
 //  TNFloatingPanel.swift
-//  FloatingPanel
 //
 //  Created by Thomas NAUDET @tomn94 on 07/07/2017.
 //  Copyright © 2017 Thomas NAUDET. Under MIT License
