@@ -13,6 +13,7 @@
 		64A6A4AB1F10007000A8F9EC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64A6A4A91F10007000A8F9EC /* Main.storyboard */; };
 		64A6A4AD1F10007000A8F9EC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 64A6A4AC1F10007000A8F9EC /* Assets.xcassets */; };
 		64A6A4B01F10007000A8F9EC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64A6A4AE1F10007000A8F9EC /* LaunchScreen.storyboard */; };
+		64D4794D1F107FF200235493 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64D4794C1F107FD700235493 /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		64A6A4AC1F10007000A8F9EC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		64A6A4AF1F10007000A8F9EC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		64A6A4B11F10007000A8F9EC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		64D4794C1F107FD700235493 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,6 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				64D4794D1F107FF200235493 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -42,6 +45,7 @@
 			children = (
 				64A6A4A41F10007000A8F9EC /* TNFloatingPanel */,
 				64A6A4A31F10007000A8F9EC /* Products */,
+				64D4794B1F107FD700235493 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -65,6 +69,14 @@
 				64A6A4B11F10007000A8F9EC /* Info.plist */,
 			);
 			path = TNFloatingPanel;
+			sourceTree = "<group>";
+		};
+		64D4794B1F107FD700235493 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				64D4794C1F107FD700235493 /* MapKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -275,7 +287,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 7HW87TV8LC;
 				INFOPLIST_FILE = TNFloatingPanel/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = fr.tomn.TNFloatingPanel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -290,7 +302,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 7HW87TV8LC;
 				INFOPLIST_FILE = TNFloatingPanel/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = fr.tomn.TNFloatingPanel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
