@@ -175,6 +175,7 @@ open class FloatingPanelController: UIViewController {
         
         /* Remove any previous view controller */
         if let previousViewController = self.viewController {
+            previousViewController.willMove(toParentViewController: nil)
             previousViewController.view.removeFromSuperview()
             previousViewController.removeFromParentViewController()
         }
