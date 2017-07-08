@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		649D717F1F10013F007E38E0 /* FloatingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D717E1F10013F007E38E0 /* FloatingPanel.swift */; };
-		649D71811F100150007E38E0 /* FloatingPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D71801F100150007E38E0 /* FloatingPanelController.swift */; };
+		649D71811F100150007E38E0 /* FloatingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D71801F100150007E38E0 /* FloatingPanel.swift */; };
 		64A6A4A61F10007000A8F9EC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64A6A4A51F10007000A8F9EC /* AppDelegate.swift */; };
 		64A6A4A81F10007000A8F9EC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64A6A4A71F10007000A8F9EC /* ViewController.swift */; };
 		64A6A4AB1F10007000A8F9EC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64A6A4A91F10007000A8F9EC /* Main.storyboard */; };
@@ -17,8 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		649D717E1F10013F007E38E0 /* FloatingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPanel.swift; sourceTree = "<group>"; };
-		649D71801F100150007E38E0 /* FloatingPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPanelController.swift; sourceTree = "<group>"; };
+		649D71801F100150007E38E0 /* FloatingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPanel.swift; sourceTree = "<group>"; };
 		64A6A4A21F10007000A8F9EC /* TNFloatingPanel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TNFloatingPanel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		64A6A4A51F10007000A8F9EC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		64A6A4A71F10007000A8F9EC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -60,8 +58,7 @@
 			children = (
 				64A6A4A51F10007000A8F9EC /* AppDelegate.swift */,
 				64A6A4A71F10007000A8F9EC /* ViewController.swift */,
-				649D717E1F10013F007E38E0 /* FloatingPanel.swift */,
-				649D71801F100150007E38E0 /* FloatingPanelController.swift */,
+				649D71801F100150007E38E0 /* FloatingPanel.swift */,
 				64A6A4A91F10007000A8F9EC /* Main.storyboard */,
 				64A6A4AC1F10007000A8F9EC /* Assets.xcassets */,
 				64A6A4AE1F10007000A8F9EC /* LaunchScreen.storyboard */,
@@ -141,10 +138,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				649D71811F100150007E38E0 /* FloatingPanelController.swift in Sources */,
+				649D71811F100150007E38E0 /* FloatingPanel.swift in Sources */,
 				64A6A4A81F10007000A8F9EC /* ViewController.swift in Sources */,
 				64A6A4A61F10007000A8F9EC /* AppDelegate.swift in Sources */,
-				649D717F1F10013F007E38E0 /* FloatingPanel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
