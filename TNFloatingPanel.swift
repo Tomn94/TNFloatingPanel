@@ -73,6 +73,9 @@ open class FloatingPanel: UIVisualEffectView {
     /// Current position of the floating panel
     open var position = Position.custom
     
+    /// Margins applied to the floating panel
+    open var margins = FloatingPanel.defaultMargins
+    
     
     override public init(effect: UIVisualEffect?) {
         super.init(effect: effect)
@@ -106,10 +109,12 @@ open class FloatingPanelController: UIViewController {
     /// Current view controller displayed by the panel
     open var viewController: UIViewController?
     
-    /// Horizontal constraints on `panelContainer` after calling `pinTo(position:in:margins:)`
+    /// Horizontal constraints on `panelContainer` after calling `pinTo(position:in:margins:)`.
+    /// First is leading/left, second is trailing/right
     private var hConstraints = [NSLayoutConstraint]()
     
     /// Vertical constraints on `panelContainer` after calling `pinTo(position:in:margins:)`
+    /// First is top, second is bottom
     private var vConstraints = [NSLayoutConstraint]()
     
     
@@ -210,20 +215,21 @@ open class FloatingPanelController: UIViewController {
     /// Helper to position panel on a parent view controller
     ///
     /// - Parameters:
-    ///   - position: New position of the panel
-    ///   - parentViewController: Onto its parent
+    ///   - position: New position of the panel in its parent view controller
     ///   - margins: Eventually provide custom margins to apply offset from the position
     ///              Default is 10pt on each side.
     ///              Note: Left & Right components are used for Leading & Trailing respectively
     open func pinTo(position: FloatingPanel.Position,
-                    in parentViewController: UIViewController,
                     margins: UIEdgeInsets = FloatingPanel.defaultMargins) {
         
         panel.position = position
+        panel.margins  = margins
         
         /* Remove any previous constraints */
         vConstraints.forEach { $0.isActive = false }
         hConstraints.forEach { $0.isActive = false }
+        
+        guard let parentViewController = self.parent else { return }
         
         /* Set Vertical position */
         if #available(iOS 11.0, *) {
