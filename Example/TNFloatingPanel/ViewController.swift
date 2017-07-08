@@ -60,6 +60,7 @@ class ViewController: UIViewController {
                                                         height: statusBarHeight))
         statusBarBackground.autoresizingMask = [.flexibleWidth]
         view.addSubview(statusBarBackground)
+        view.bringSubview(toFront: panelController.panelContainer)  // iPhone landscape fix
     }
     
     /// Creates the content, then calls `FloatingPanelController.setViewController(_:)`
