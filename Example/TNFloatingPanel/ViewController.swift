@@ -18,6 +18,17 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        /* Unrelated: just adds a blurred background behind the status bar for better look.
+           Still displayed when the status bar is hidden (iPhone landscape) ¯\_(ツ)_/¯ */
+        let statusBarBackground   = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        let statusBarHeight       = UIApplication.shared.statusBarFrame.height
+        statusBarBackground.frame = CGRect(origin: .zero,
+                                           size: CGSize(width:  view.frame.width,
+                                                        height: statusBarHeight))
+        statusBarBackground.autoresizingMask = [.flexibleWidth]
+        view.addSubview(statusBarBackground)
+        
+        
         /* 1. Add the Panel to this view controller */
         panelController.addTo(parent: self)
         
