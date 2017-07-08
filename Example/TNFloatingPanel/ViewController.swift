@@ -8,6 +8,10 @@
 
 import UIKit
 
+fileprivate extension Selector {
+    static let togglePanel = #selector(ViewController.togglePanel)
+}
+
 /// Main view controller of the app
 /// In this example, this contains a full-screen map, with the floating panel as an overlay
 class ViewController: UIViewController {
@@ -33,6 +37,19 @@ class ViewController: UIViewController {
         
         /* 6. Show panel at launch */
         panelController.showPanel()
+        
+        /* Bonus 1: Toggle panel visibility by tapping on map */
+        let tap = UITapGestureRecognizer(target: self,
+                                         action: .togglePanel)
+        self.view.addGestureRecognizer(tap)
+        
+        /* Bonus 2: Toggle panel visibility by swiping
+           (could be improved with a UIPanGestureRecognizer to follow finger) */
+        let swipe = UISwipeGestureRecognizer(target: self,
+                                             action: .togglePanel)
+        swipe.direction = .left  // doesn't follow panel position .topLeading in RTL
+        panelController.panel.addGestureRecognizer(swipe)
+        
         
         /* Unrelated: just adds a blurred background behind the status bar for better look.
            Still displayed when the status bar is hidden (iPhone landscape) ¯\_(ツ)_/¯ */
@@ -99,9 +116,22 @@ class ViewController: UIViewController {
             navVC.navigationBar.shadowImage = UIImage()
         }
         
+        /* Add a button to hide/show the panel */
+        contentVC.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop,
+                                                                     target: self,
+                                                                     action: .togglePanel)
         
         /* Finally, apply content to panel */
         panelController.setViewController(navVC)
+    }
+    
+    @objc func togglePanel() {
+        
+        if panelController.isPanelVisible {
+            panelController.hidePanel()
+        } else {
+            panelController.showPanel()
+        }
     }
     
 }
