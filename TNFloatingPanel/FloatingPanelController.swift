@@ -20,11 +20,11 @@ open class FloatingPanelController: UIViewController {
     /// if you want to apply constraints/position/resize panel manually.
     open let panel: FloatingPanel
     
-    /// Horizontal constraint on `panelContainer` after calling `pinTo(position:in:margins:)`
-    private var hConstraint: NSLayoutConstraint?
+    /// Horizontal constraints on `panelContainer` after calling `pinTo(position:in:margins:)`
+    private var hConstraints = [NSLayoutConstraint]()
     
-    /// Vertical constraint on `panelContainer` after calling `pinTo(position:in:margins:)`
-    private var vConstraint: NSLayoutConstraint?
+    /// Vertical constraints on `panelContainer` after calling `pinTo(position:in:margins:)`
+    private var vConstraints = [NSLayoutConstraint]()
     
     
     /// Instantiates a new controller and its panel
@@ -81,7 +81,7 @@ open class FloatingPanelController: UIViewController {
     
     // MARK: - Set Up Layout
     
-    /// Helper to add a floating panel to a container
+    /// Helper to add a floating panel to the view of the given container
     ///
     /// - Parameter parentViewController: Parent view controller as the container
     open func addTo(parent parentViewController: UIViewController) {
@@ -100,40 +100,52 @@ open class FloatingPanelController: UIViewController {
     ///              Default is 10pt on each side.
     ///              Note: Left & Right components are used for Leading & Trailing respectively
     open func pinTo(position: FloatingPanel.Position,
-               in parentViewController: UIViewController,
-               margins: UIEdgeInsets = UIEdgeInsets(top:    10, left:  10,
-                                                    bottom: 10, right: 10)) {
+                    in parentViewController: UIViewController,
+                    margins: UIEdgeInsets = UIEdgeInsets(top:    10, left:  10,
+                                                         bottom: 10, right: 10)) {
+        
+        panel.position = position
         
         /* Remove any previous constraints */
-        vConstraint?.isActive = false
-        hConstraint?.isActive = false
+        vConstraints.forEach { $0.isActive = false }
+        hConstraints.forEach { $0.isActive = false }
         
         /* Set Vertical position */
         if #available(iOS 11.0, *) {
             let guide = parentViewController.view.safeAreaLayoutGuide
             switch position {
-            case .topLeading, .topTrailing, .topLeft, .topRight:
-                vConstraint = panelContainer.topAnchor.constraint(equalTo: guide.topAnchor,
-                                                                 constant: margins.top)
-            case .bottomLeading, .bottomTrailing, .bottomLeft, .bottomRight:
-                vConstraint = panelContainer.bottomAnchor.constraint(equalTo: guide.bottomAnchor,
-                                                                     constant: -margins.bottom)
+            case .top, .topLeading, .topTrailing, .topLeft, .topRight:
+                vConstraints = [panelContainer.topAnchor.constraint(equalTo: guide.topAnchor,
+                                                                    constant: margins.top)]
+            case .bottom, .bottomLeading, .bottomTrailing, .bottomLeft, .bottomRight:
+                vConstraints = [panelContainer.bottomAnchor.constraint(equalTo: guide.bottomAnchor,
+                                                                       constant: -margins.bottom)]
+            case .leading, .trailing, .left, .right:    // TODO: 2 constraints
+                vConstraints = [panelContainer.topAnchor.constraint(equalTo: guide.topAnchor,
+                                                                    constant: margins.top),
+                                panelContainer.bottomAnchor.constraint(equalTo: guide.bottomAnchor,
+                                                                       constant: -margins.bottom)]
             case .custom:
-                vConstraint = nil
+                vConstraints = []
             }
         } else {
             switch position {
-            case .topLeading, .topTrailing, .topLeft, .topRight:
-                vConstraint = panelContainer.topAnchor.constraint(equalTo: parentViewController.topLayoutGuide.bottomAnchor,
-                                                                 constant: margins.top)
-            case .bottomLeading, .bottomTrailing, .bottomLeft, .bottomRight:
-                vConstraint = panelContainer.bottomAnchor.constraint(equalTo: parentViewController.bottomLayoutGuide.topAnchor,
-                                                                     constant: -margins.bottom)
+            case .top, .topLeading, .topTrailing, .topLeft, .topRight:
+                vConstraints = [panelContainer.topAnchor.constraint(equalTo: parentViewController.topLayoutGuide.bottomAnchor,
+                                                                    constant: margins.top)]
+            case .bottom, .bottomLeading, .bottomTrailing, .bottomLeft, .bottomRight:
+                vConstraints = [panelContainer.bottomAnchor.constraint(equalTo: parentViewController.bottomLayoutGuide.topAnchor,
+                                                                       constant: -margins.bottom)]
+            case .leading, .trailing, .left, .right:
+                vConstraints = [panelContainer.topAnchor.constraint(equalTo: parentViewController.topLayoutGuide.bottomAnchor,
+                                                                    constant: margins.top),
+                                panelContainer.bottomAnchor.constraint(equalTo: parentViewController.bottomLayoutGuide.topAnchor,
+                                                                       constant: -margins.bottom)]
             case .custom:
-                vConstraint = nil
+                vConstraints = []
             }
         }
-        vConstraint?.isActive = true
+        vConstraints.forEach { $0.isActive = true }
         
         /* Set Horizontal position */
         let guide: UILayoutGuide
@@ -141,35 +153,50 @@ open class FloatingPanelController: UIViewController {
         else { guide = parentViewController.view.layoutMarginsGuide }
         
         switch position {
-        case .topLeading, .bottomLeading:
-            hConstraint = panelContainer.leadingAnchor.constraint(equalTo: guide.leadingAnchor,
-                                                                 constant: margins.left)
-        case .topTrailing, .bottomTrailing:
-            hConstraint = panelContainer.trailingAnchor.constraint(equalTo: guide.trailingAnchor,
-                                                                  constant: -margins.right)
-        case .topLeft, .bottomLeft:
-            hConstraint = panelContainer.leftAnchor.constraint(equalTo: guide.leftAnchor,
-                                                              constant: margins.left)
-        case .topRight, .bottomRight:
-            hConstraint = panelContainer.rightAnchor.constraint(equalTo: guide.rightAnchor,
-                                                               constant: -margins.right)
+        case .leading, .topLeading, .bottomLeading:
+            hConstraints = [panelContainer.leadingAnchor.constraint(equalTo: guide.leadingAnchor,
+                                                                    constant: margins.left)]
+        case .trailing, .topTrailing, .bottomTrailing:
+            hConstraints = [panelContainer.trailingAnchor.constraint(equalTo: guide.trailingAnchor,
+                                                                     constant: -margins.right)]
+        case .left, .topLeft, .bottomLeft:
+            hConstraints = [panelContainer.leftAnchor.constraint(equalTo: guide.leftAnchor,
+                                                                 constant: margins.left)]
+        case .right, .topRight, .bottomRight:
+            hConstraints = [panelContainer.rightAnchor.constraint(equalTo: guide.rightAnchor,
+                                                                  constant: -margins.right)]
+        case .top, .bottom: // TODO: 2 constraints
+            hConstraints = [panelContainer.leadingAnchor.constraint(equalTo: guide.leadingAnchor,
+                                                                    constant: margins.left),
+                            panelContainer.trailingAnchor.constraint(equalTo: guide.trailingAnchor,
+                                                                     constant: -margins.right)]
         case.custom:
-            hConstraint = nil
+            hConstraints = []
         }
-        hConstraint?.isActive = true
+        hConstraints.forEach { $0.isActive = true }
     }
     
-    /// Helper to define size of the panel
+    /// Helper to define size of the panel.
+    /// Width is ignored if the panel position is top or bottom.
+    /// Height is ignored if the panel position is leading, left, trailing or right.
     ///
     /// - Parameter size: New size for the panel
     open func resizePanel(_ size: CGSize) {
         
         panelContainer.removeConstraints(panelContainer.constraints)
         
-        NSLayoutConstraint.activate([
-            panelContainer.widthAnchor.constraint(equalToConstant:  size.width),
-            panelContainer.heightAnchor.constraint(equalToConstant: size.height)
-        ])
+        let widthConstraint  = panelContainer.widthAnchor.constraint(equalToConstant:  size.width)
+        let heightConstraint = panelContainer.heightAnchor.constraint(equalToConstant: size.height)
+        
+        switch panel.position {
+        case .top, .bottom:
+            heightConstraint.isActive = true
+        case .leading, .left, .trailing, .right:
+            widthConstraint.isActive  = true
+        default:
+            widthConstraint.isActive  = true
+            heightConstraint.isActive = true
+        }
     }
 
 }

@@ -30,11 +30,13 @@ class ViewController: UIViewController {
                                            height: 328))
         
         /* 4. Set Panel content */
-        setUpPanel()
+        setUpPanelContent()
     }
     
     /// Creates the content, then calls `FloatingPanelController.setViewController(_:)`
-    func setUpPanel() {
+    /// Here creates a navigation controller with a table view inside.
+    /// Could be basically “anything”.
+    func setUpPanelContent() {
         
         /* Create content of the panel */
         

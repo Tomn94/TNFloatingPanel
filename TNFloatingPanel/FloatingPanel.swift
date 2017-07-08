@@ -11,17 +11,24 @@ import UIKit
 /// View displayed in the FloatingPanelController
 open class FloatingPanel: UIVisualEffectView {
     
-    /// Available positions for the floating panel
+    /// Available positions for the floating panel.
+    /// Prefer using leading/trailing instead of left/right to support right-to-left languages
     public enum Position {
+        case top
+        case bottom
+        case leading
+        case trailing
         case topLeading
         case topTrailing
         case bottomLeading
         case bottomTrailing
+        case left
+        case right
         case topLeft
         case topRight
         case bottomLeft
         case bottomRight
-        /// By default, position undetermined or you provided your own
+        /// By default, position undetermined, or you provided your own
         case custom
     }
     
