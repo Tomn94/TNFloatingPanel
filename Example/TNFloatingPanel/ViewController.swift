@@ -13,10 +13,26 @@ import UIKit
 class ViewController: UIViewController {
 
     /// Panel overlaying the view
-    let panelController = FloatingPanelController()
+    let panelController = FloatingPanelController()     /* 1. Instantiate */
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        /* 2. Add the Panel to this view controller */
+        panelController.addTo(parent: self)
+        
+        /* 3. Set Panel size */
+        panelController.resizeTo(CGSize(width:  320,
+                                        height: 328))
+        
+        /* 4. Position Panel on this view controller */
+        panelController.pinTo(position: .topLeading)
+        
+        /* 5. Set Panel content */
+        setUpPanelContent()
+        
+        /* 6. Show panel at launch */
+        panelController.showPanel()
         
         /* Unrelated: just adds a blurred background behind the status bar for better look.
            Still displayed when the status bar is hidden (iPhone landscape) ¯\_(ツ)_/¯ */
@@ -27,21 +43,6 @@ class ViewController: UIViewController {
                                                         height: statusBarHeight))
         statusBarBackground.autoresizingMask = [.flexibleWidth]
         view.addSubview(statusBarBackground)
-        
-        
-        /* 1. Add the Panel to this view controller */
-        panelController.addTo(parent: self)
-        
-        /* 2. Position Panel on this view controller */
-        panelController.pinTo(position: .topLeading,
-                              in: self)
-        
-        /* 3. Set Panel size */
-        panelController.resizeTo(CGSize(width:  320,
-                                        height: 328))
-        
-        /* 4. Set Panel content */
-        setUpPanelContent()
     }
     
     /// Creates the content, then calls `FloatingPanelController.setViewController(_:)`
@@ -74,8 +75,8 @@ class ViewController: UIViewController {
             navVC.navigationBar.isTranslucent = true
             
             /* Now we need to encapsulate the content (table view) in a view,
-             so we can add an offset to it. Otherwise the scrolled table view
-             would appear behind the transparent navigation bar */
+               so we can add an offset to it. Otherwise the scrolled table view
+               would appear behind the transparent navigation bar */
             let tableViewHolder = UIView(frame: CGRect(x: 0, y: 0, width: 500, height: 500))
             
             let topMargin: CGFloat = navVC.navigationBar.frame.height / 2
