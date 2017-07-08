@@ -42,6 +42,7 @@ class ViewController: UIViewController {
         
         let contentVC = UIViewController()
         contentVC.title = "Floating Panel"
+        contentVC.automaticallyAdjustsScrollViewInsets = false  // pre-iOS 11
         
         let navVC = UINavigationController(rootViewController: contentVC)
         
