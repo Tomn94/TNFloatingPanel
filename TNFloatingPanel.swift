@@ -28,8 +28,9 @@
  
          let panelController = FloatingPanelController()
          panelController.addTo(parent: viewController)
-         panelController.pinTo(position: .topLeading, in: viewController)
          panelController.resizeTo(CGSize(width: 320, height: 328))
+         panelController.pinTo(position: .topLeading)
+         panelController.showPanel()
  
      More on:
          https://github.com/Tomn94/TNFloatingPanel
@@ -109,11 +110,14 @@ open class FloatingPanelController: UIViewController {
     /// Current view controller displayed by the panel
     open var viewController: UIViewController?
     
-    /// Horizontal constraints on `panelContainer` after calling `pinTo(position:in:margins:)`.
+    /// Whether the panel is currently collapsed or visible on the parent
+    open var isPanelVisible = false
+    
+    /// Horizontal constraints on `panelContainer` after calling `pinTo(position:margins:)`.
     /// First is leading/left, second is trailing/right
     private var hConstraints = [NSLayoutConstraint]()
     
-    /// Vertical constraints on `panelContainer` after calling `pinTo(position:in:margins:)`
+    /// Vertical constraints on `panelContainer` after calling `pinTo(position:margins:)`
     /// First is top, second is bottom
     private var vConstraints = [NSLayoutConstraint]()
     
@@ -203,6 +207,7 @@ open class FloatingPanelController: UIViewController {
     // MARK: - Set Up Layout
     
     /// Helper to add a floating panel to the view of the given container
+    /// You can call `resizeTo(_:)` then `pinTo(position:margins:)` after.
     ///
     /// - Parameter parentViewController: Parent view controller as the container
     open func addTo(parent parentViewController: UIViewController) {
@@ -212,7 +217,36 @@ open class FloatingPanelController: UIViewController {
         self.didMove(toParentViewController: parentViewController)
     }
     
-    /// Helper to position panel on a parent view controller
+    /// Helper to define size of the panel.
+    /// Width is ignored if the panel position is top or bottom.
+    /// Height is ignored if the panel position is leading, left, trailing or right.
+    /// You can call `pinTo(position:margins:)` after.
+    ///
+    /// - Parameter size: New size for the panel.
+    ///                   Uses the width or height of the parent view controller
+    ///                   when the latter is not big enough
+    open func resizeTo(_ size: CGSize) {
+        
+        panelContainer.removeConstraints(panelContainer.constraints)
+        
+        let widthConstraint  = panelContainer.widthAnchor.constraint(equalToConstant:  size.width)
+        let heightConstraint = panelContainer.heightAnchor.constraint(equalToConstant: size.height)
+        widthConstraint.priority  = .defaultHigh
+        heightConstraint.priority = .defaultHigh
+        
+        switch panel.position {
+        case .top, .bottom:
+            heightConstraint.isActive = true
+        case .leading, .left, .trailing, .right:
+            widthConstraint.isActive  = true
+        default:
+            widthConstraint.isActive  = true
+            heightConstraint.isActive = true
+        }
+    }
+    
+    /// Helper to position panel on a parent view controller.
+    /// Better to call `resizeTo(_:)` before this method.
     ///
     /// - Parameters:
     ///   - position: New position of the panel in its parent view controller
@@ -311,33 +345,133 @@ open class FloatingPanelController: UIViewController {
             hConstraints = []
         }
         hConstraints.forEach { $0.isActive = true }
+        
+        /* Change constants if panel is hidden */
+        if !isPanelVisible {
+            self.hidePanel(animated: false)
+        }
     }
     
-    /// Helper to define size of the panel.
-    /// Width is ignored if the panel position is top or bottom.
-    /// Height is ignored if the panel position is leading, left, trailing or right.
+    
+    // MARK: - Animate Panel
+    
+    /// Present the panel, using constraints set up in `pinTo(position:margins:)`
     ///
-    /// - Parameter size: New size for the panel.
-    ///                   Uses the width or height of the parent view controller
-    ///                   when the latter is not big enough
-    open func resizeTo(_ size: CGSize) {
+    /// - Parameters:
+    ///   - animated: Whether expanding the panel should be animated
+    ///   - inCornerAlongXAxis: Whether the panel should animate translation on the X axis,
+    ///                         if the panel is pinned in a corner. Default is true.
+    ///   - inCornerAlongYAxis: Whether the panel should animate translation on the Y axis,
+    ///                         if the panel is pinned in a corner. Defaults to false.
+    open func showPanel(animated:           Bool = true,
+                        inCornerAlongXAxis: Bool = true,
+                        inCornerAlongYAxis: Bool = false) {
         
-        panelContainer.removeConstraints(panelContainer.constraints)
+        isPanelVisible = true
         
-        let widthConstraint  = panelContainer.widthAnchor.constraint(equalToConstant:  size.width)
-        let heightConstraint = panelContainer.heightAnchor.constraint(equalToConstant: size.height)
-        widthConstraint.priority  = .defaultHigh
-        heightConstraint.priority = .defaultHigh
+        /* Commit pre-defined positioning */
+        togglePanel(newInsets: panel.margins,
+                    animated:  animated,
+                    inCornerAlongXAxis: inCornerAlongXAxis,
+                    inCornerAlongYAxis: inCornerAlongYAxis)
+    }
+    
+    /// Dismiss the panel, using constraints set up in `pinTo(position:margins:)`
+    ///
+    /// - Parameters:
+    ///   - animated: Whether collapsing the panel should be animated
+    ///   - inCornerAlongXAxis: Whether the panel should animate translation on the X axis,
+    ///                         if the panel is pinned in a corner. Default is true.
+    ///   - inCornerAlongYAxis: Whether the panel should animate translation on the Y axis,
+    ///                         if the panel is pinned in a corner. Defaults to false.
+    open func hidePanel(animated:           Bool = true,
+                        inCornerAlongXAxis: Bool = true,
+                        inCornerAlongYAxis: Bool = false) {
         
+        isPanelVisible = false
+        
+        let xOffset = -(panel.frame.width  + panel.margins.left + panel.margins.right)
+        let yOffset = -(panel.frame.height + panel.margins.top  + panel.margins.bottom)
+        
+        /* Commit off-screen positioning */
+        togglePanel(newInsets: UIEdgeInsets(top:    yOffset, left:  xOffset,
+                                            bottom: yOffset, right: xOffset),
+                    animated:  animated,
+                    inCornerAlongXAxis: inCornerAlongXAxis,
+                    inCornerAlongYAxis: inCornerAlongYAxis)
+    }
+    
+    /// Common operations when presenting/dismissing the panel
+    ///
+    /// - Parameters:
+    ///   - newInsets: New offsets/margins constants for the constraints
+    ///   - animated: Whether the new state of the panel should be animated
+    ///   - inCornerAlongXAxis: Whether the panel should animate translation on the X axis,
+    ///                         if the panel is pinned in a corner. Default is true.
+    ///   - inCornerAlongYAxis: Whether the panel should animate translation on the Y axis,
+    ///                         if the panel is pinned in a corner. Defaults to false.
+    private func togglePanel(newInsets:  UIEdgeInsets,
+                             animated:           Bool = true,
+                             inCornerAlongXAxis: Bool = true,
+                             inCornerAlongYAxis: Bool = false) {
+        
+        /* Compute new constraints */
         switch panel.position {
-        case .top, .bottom:
-            heightConstraint.isActive = true
-        case .leading, .left, .trailing, .right:
-            widthConstraint.isActive  = true
-        default:
-            widthConstraint.isActive  = true
-            heightConstraint.isActive = true
+        case .leading, .left:
+            hConstraints.first?.constant     =  newInsets.left
+        case .trailing, .right:
+            hConstraints.last?.constant      = -newInsets.right
+        case .top:
+            vConstraints.first?.constant     =  newInsets.top
+        case .bottom:
+            vConstraints.last?.constant      = -newInsets.bottom
+        case .topLeading, .topLeft:
+            if inCornerAlongYAxis {
+                vConstraints.first?.constant =  newInsets.top
+            }
+            if inCornerAlongXAxis {
+                hConstraints.first?.constant =  newInsets.left
+            }
+        case .topTrailing, .topRight:
+            if inCornerAlongYAxis {
+                vConstraints.first?.constant =  newInsets.top
+            }
+            if inCornerAlongXAxis {
+                hConstraints.last?.constant  = -newInsets.right
+            }
+        case .bottomLeading, .bottomLeft:
+            if inCornerAlongYAxis {
+                vConstraints.last?.constant  = -newInsets.bottom
+            }
+            if inCornerAlongXAxis {
+                hConstraints.first?.constant =  newInsets.left
+            }
+        case .bottomTrailing, .bottomRight:
+            if inCornerAlongYAxis {
+                vConstraints.last?.constant  = -newInsets.bottom
+            }
+            if inCornerAlongXAxis {
+                hConstraints.last?.constant  = -newInsets.right
+            }
+        case .custom:
+            return
         }
+        
+        
+        /* Refresh UI */
+        if !animated {
+            self.parent?.view.layoutIfNeeded()
+            return
+        }
+        
+        UIView.animate(withDuration: 0.42,
+                       delay: 0,
+                       usingSpringWithDamping: 0.8,
+                       initialSpringVelocity: 1,
+                       options: [.beginFromCurrentState],
+                       animations: {
+                        self.parent?.view.layoutIfNeeded()
+        })
     }
 
 }
