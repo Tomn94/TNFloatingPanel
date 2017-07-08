@@ -26,8 +26,8 @@ class ViewController: UIViewController {
                               in: self)
         
         /* 3. Set Panel size */
-        panelController.resizePanel(CGSize(width: 320,
-                                           height: 328))
+        panelController.resizeTo(CGSize(width: 320,
+                                        height: 328))
         
         /* 4. Set Panel content */
         setUpPanelContent()

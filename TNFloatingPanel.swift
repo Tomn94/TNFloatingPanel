@@ -1,12 +1,42 @@
 //
-//  FloatingPanel.swift
-//  TNFloatingPanel
+//  TNFloatingPanel.swift
+//  FloatingPanel
 //
-//  Created by Tomn on 07/07/2017.
-//  Copyright © 2017 Thomas NAUDET. All rights reserved.
+//  Created by Thomas NAUDET @tomn94 on 07/07/2017.
+//  Copyright © 2017 Thomas NAUDET. Under MIT License
 //
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+
+/**
+    Usage example:
+ 
+         let panelController = FloatingPanelController()
+         panelController.addTo(parent: viewController)
+         panelController.pinTo(position: .topLeading, in: viewController)
+         panelController.resizeTo(CGSize(width: 320, height: 328))
+ 
+     More on:
+         https://github.com/Tomn94/TNFloatingPanel
+ */
 
 import UIKit
+
 
 /// View displayed in the FloatingPanelController
 open class FloatingPanel: UIVisualEffectView {
@@ -230,7 +260,7 @@ open class FloatingPanelController: UIViewController {
     /// Height is ignored if the panel position is leading, left, trailing or right.
     ///
     /// - Parameter size: New size for the panel
-    open func resizePanel(_ size: CGSize) {
+    open func resizeTo(_ size: CGSize) {
         
         panelContainer.removeConstraints(panelContainer.constraints)
         
