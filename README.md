@@ -1,6 +1,6 @@
 # FloatingPanel
 
-![Version](https://img.shields.io/badge/version-1.2-green.svg)
+![Version](https://img.shields.io/badge/version-1.3-green.svg)
 [![Code](https://img.shields.io/badge/code-Swift%204-orange.svg)](https://swift.org)
 [![Platform](https://img.shields.io/badge/platform-iOS-red.svg)](https://www.apple.com/ios/)
 [![Contributors](https://img.shields.io/badge/contributors-Thomas%20NAUDET-blue.svg)](https://twitter.com/tomn94)
@@ -105,6 +105,10 @@ An Xcode project demonstrating `FloatingPanel` on a map is included under [Examp
 
 
 ## Release notes
+
+#### v1.3
+
+> Hidden position fixed for Right-To-Left languages
 
 #### v1.2
 
