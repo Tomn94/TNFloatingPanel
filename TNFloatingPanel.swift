@@ -1,5 +1,5 @@
 //
-//  FloatingPanel v1.1
+//  FloatingPanel v1.2
 //  TNFloatingPanel.swift
 //
 //  Created by Thomas NAUDET @tomn94 on 07/07/2017.
@@ -30,6 +30,7 @@
          panelController.addTo(parent: viewController)
          panelController.resizeTo(CGSize(width: 320, height: 328))
          panelController.pinTo(position: .topLeading)
+         panelController.set(viewController: yourContent)
          panelController.showPanel()
  
      More on:
@@ -129,7 +130,7 @@ open class FloatingPanelController: UIViewController {
     public init(style: UIBlurEffectStyle = .extraLight) {
         
         panel = FloatingPanel(effect: UIBlurEffect(style: style))
-
+        
         super.init(nibName: nil, bundle: nil)
         
         /* Set up panel inside a container view */
@@ -180,7 +181,7 @@ open class FloatingPanelController: UIViewController {
     /// Populates the panel with specified content
     ///
     /// - Parameter viewController: View controller to display in the panel
-    open func setViewController(_ viewController: UIViewController) {
+    open func set(viewController: UIViewController) {
         
         /* Remove any previous view controller */
         if let previousViewController = self.viewController {
@@ -346,9 +347,12 @@ open class FloatingPanelController: UIViewController {
         }
         hConstraints.forEach { $0.isActive = true }
         
-        /* Change constants if panel is hidden */
+        
+        /* Reposition panel if animated before */
         if !isPanelVisible {
             self.hidePanel(animated: false)
+        } else {
+            self.showPanel()
         }
     }
     
@@ -369,11 +373,20 @@ open class FloatingPanelController: UIViewController {
         
         isPanelVisible = true
         
-        /* Commit pre-defined positioning */
-        togglePanel(newInsets: panel.margins,
-                    animated:  animated,
-                    inCornerAlongXAxis: inCornerAlongXAxis,
-                    inCornerAlongYAxis: inCornerAlongYAxis)
+        /* Apply to UI */
+        guard animated else {
+            self.panelContainer.transform = .identity
+            return
+        }
+        
+        UIView.animate(withDuration: 0.42,
+                       delay: 0,
+                       usingSpringWithDamping: 0.8,
+                       initialSpringVelocity: 1,
+                       options: [.beginFromCurrentState],
+                       animations: {
+                        self.panelContainer.transform = .identity
+        })
     }
     
     /// Dismiss the panel, using constraints set up in `pinTo(position:margins:)`
@@ -390,77 +403,41 @@ open class FloatingPanelController: UIViewController {
         
         isPanelVisible = false
         
-        let xOffset = -(panel.frame.width  + panel.margins.left + panel.margins.right)
-        let yOffset = -(panel.frame.height + panel.margins.top  + panel.margins.bottom)
+        /* Compute off-screen position */                 // landscape iPhone iOS 10 fix
+        var xOffset = panel.frame.width  + panel.margins.left + panel.margins.right + 15
+        var yOffset = panel.frame.height + panel.margins.top  + panel.margins.bottom
         
-        /* Commit off-screen positioning */
-        togglePanel(newInsets: UIEdgeInsets(top:    yOffset, left:  xOffset,
-                                            bottom: yOffset, right: xOffset),
-                    animated:  animated,
-                    inCornerAlongXAxis: inCornerAlongXAxis,
-                    inCornerAlongYAxis: inCornerAlongYAxis)
-    }
-    
-    /// Common operations when presenting/dismissing the panel
-    ///
-    /// - Parameters:
-    ///   - newInsets: New offsets/margins constants for the constraints
-    ///   - animated: Whether the new state of the panel should be animated
-    ///   - inCornerAlongXAxis: Whether the panel should animate translation on the X axis,
-    ///                         if the panel is pinned in a corner. Default is true.
-    ///   - inCornerAlongYAxis: Whether the panel should animate translation on the Y axis,
-    ///                         if the panel is pinned in a corner. Defaults to false.
-    private func togglePanel(newInsets:  UIEdgeInsets,
-                             animated:           Bool = true,
-                             inCornerAlongXAxis: Bool = true,
-                             inCornerAlongYAxis: Bool = false) {
-        
-        /* Compute new constraints */
         switch panel.position {
         case .leading, .left:
-            hConstraints.first?.constant     =  newInsets.left
+            xOffset *= -1
+            yOffset  =  0
         case .trailing, .right:
-            hConstraints.last?.constant      = -newInsets.right
+            yOffset  =  0
         case .top:
-            vConstraints.first?.constant     =  newInsets.top
+            xOffset  =  0
+            yOffset *= -1
         case .bottom:
-            vConstraints.last?.constant      = -newInsets.bottom
+            xOffset  =  0
         case .topLeading, .topLeft:
-            if inCornerAlongYAxis {
-                vConstraints.first?.constant =  newInsets.top
-            }
-            if inCornerAlongXAxis {
-                hConstraints.first?.constant =  newInsets.left
-            }
+            xOffset  =  inCornerAlongXAxis ? xOffset * -1 : 0
+            yOffset  =  inCornerAlongYAxis ? yOffset * -1 : 0
         case .topTrailing, .topRight:
-            if inCornerAlongYAxis {
-                vConstraints.first?.constant =  newInsets.top
-            }
-            if inCornerAlongXAxis {
-                hConstraints.last?.constant  = -newInsets.right
-            }
+            xOffset  =  inCornerAlongXAxis ? xOffset      : 0
+            yOffset  =  inCornerAlongYAxis ? yOffset * -1 : 0
         case .bottomLeading, .bottomLeft:
-            if inCornerAlongYAxis {
-                vConstraints.last?.constant  = -newInsets.bottom
-            }
-            if inCornerAlongXAxis {
-                hConstraints.first?.constant =  newInsets.left
-            }
+            xOffset  =  inCornerAlongXAxis ? xOffset * -1 : 0
+            yOffset  =  inCornerAlongYAxis ? yOffset      : 0
         case .bottomTrailing, .bottomRight:
-            if inCornerAlongYAxis {
-                vConstraints.last?.constant  = -newInsets.bottom
-            }
-            if inCornerAlongXAxis {
-                hConstraints.last?.constant  = -newInsets.right
-            }
+            xOffset  =  inCornerAlongXAxis ? xOffset      : 0
+            yOffset  =  inCornerAlongYAxis ? yOffset      : 0
         case .custom:
             return
         }
         
-        
-        /* Refresh UI */
-        if !animated {
-            self.parent?.view.layoutIfNeeded()
+        /* Apply to UI */
+        guard animated else {
+            self.panelContainer.transform = CGAffineTransform(translationX: xOffset,
+                                                              y: yOffset)
             return
         }
         
@@ -470,8 +447,9 @@ open class FloatingPanelController: UIViewController {
                        initialSpringVelocity: 1,
                        options: [.beginFromCurrentState],
                        animations: {
-                        self.parent?.view.layoutIfNeeded()
+                        self.panelContainer.transform = CGAffineTransform(translationX: xOffset,
+                                                                          y: yOffset)
         })
     }
-
+    
 }

@@ -1,6 +1,6 @@
 # FloatingPanel
 
-![Version](https://img.shields.io/badge/version-1.1-green.svg)
+![Version](https://img.shields.io/badge/version-1.2-green.svg)
 [![Code](https://img.shields.io/badge/code-Swift%204-orange.svg)](https://swift.org)
 [![Platform](https://img.shields.io/badge/platform-iOS-red.svg)](https://www.apple.com/ios/)
 [![Contributors](https://img.shields.io/badge/contributors-Thomas%20NAUDET-blue.svg)](https://twitter.com/tomn94)
@@ -44,7 +44,7 @@ panelController.pinTo(position: .topLeading)
     
 /* 5. Set Panel content */
 let yourContentVC = UIViewController()
-panelController.setViewController(yourContentVC)
+panelController.set(viewController: yourContentVC)
     
 /* 6. Show Panel animated */
 panelController.showPanel()
@@ -80,18 +80,18 @@ panelController.pinTo(position: .topLeading,
 
 #### Animations
 
-If you use `resizeTo(_:)` then `pinTo(position:margins:)`, the panel is hidden by default.
-
 You can display the panel by calling: `showPanel(animated:inCornerAlongXAxis:inCornerAlongYAxis:)`\
 and hide it with: `hidePanel(animated:inCornerAlongXAxis:inCornerAlongYAxis:)`
 
 *The above optional parameters can help you configure the translation animation.*
 
+*By using `pinTo(position:margins:)`, the panel is hidden by default.*
+
 #### Let me do
 
 If you want to position and size the panel yourself, apply constraints to `FloatingPanelController.panelContainer`.\
 If you want to populate the panel yourself, add your views to `FloatingPanelController.panel.contentView`.\
-*Refer to `addTo`/`pinTo`/`resizeTo`/`setViewController` methods if needed.*
+*Refer to `addTo`/`pinTo`/`resizeTo`/`set(viewController:)` methods if needed.*
 
 #### Example
 
@@ -106,9 +106,14 @@ An Xcode project demonstrating `FloatingPanel` on a map is included under [Examp
 
 ## Release notes
 
+#### v1.2
+
+> Renamed `setViewController(_:)` → `set(viewController:)` to be used in projects containing Objective-C.\
+> Simplified animation mechanism.
+
 #### v1.1
 
-> Added spring animations to show/hide the panel (requires usage of helper methods to size and position the view)\
+> Added spring animations to show/hide the panel (requires usage of helper methods to size and position the view).\
 > The panel is now hidden by default.
 
 #### v1.0

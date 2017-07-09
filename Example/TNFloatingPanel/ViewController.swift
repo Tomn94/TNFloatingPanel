@@ -63,7 +63,7 @@ class ViewController: UIViewController {
         view.bringSubview(toFront: panelController.panelContainer)  // iPhone landscape fix
     }
     
-    /// Creates the content, then calls `FloatingPanelController.setViewController(_:)`
+    /// Creates the content, then calls `FloatingPanelController.set(viewController:)`
     /// Here creates a navigation controller with a table view inside.
     /// Could be basically “anything”.
     func setUpPanelContent() {
@@ -123,7 +123,7 @@ class ViewController: UIViewController {
                                                                      action: .togglePanel)
         
         /* Finally, apply content to panel */
-        panelController.setViewController(navVC)
+        panelController.set(viewController: navVC)
     }
     
     @objc func togglePanel() {
