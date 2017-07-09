@@ -1,5 +1,5 @@
 //
-//  FloatingPanel v1.2
+//  FloatingPanel v1.3
 //  TNFloatingPanel.swift
 //
 //  Created by Thomas NAUDET @tomn94 on 07/07/2017.
@@ -432,6 +432,14 @@ open class FloatingPanelController: UIViewController {
             yOffset  =  inCornerAlongYAxis ? yOffset      : 0
         case .custom:
             return
+        }
+        
+        /* Handle right-to-left languages */
+        if UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft &&
+           inCornerAlongXAxis &&
+           (panel.position == .leading  || panel.position == .topLeading  || panel.position == .bottomLeading ||
+            panel.position == .trailing || panel.position == .topTrailing || panel.position == .bottomTrailing) {
+            xOffset *= -1
         }
         
         /* Apply to UI */
