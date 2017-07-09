@@ -9,7 +9,10 @@
 import UIKit
 
 fileprivate extension Selector {
+    /// Toggle panel with button or map
     static let togglePanel = #selector(ViewController.togglePanel)
+    /// User grabbed the panel and moves it around
+    static let dragPanel   = #selector(ViewController.dragPanel(_:))
 }
 
 /// Main view controller of the app
@@ -43,12 +46,10 @@ class ViewController: UIViewController {
                                          action: .togglePanel)
         self.view.addGestureRecognizer(tap)
         
-        /* Bonus 2: Toggle panel visibility by swiping
-           (could be improved with a UIPanGestureRecognizer to follow finger) */
-        let swipe = UISwipeGestureRecognizer(target: self,
-                                             action: .togglePanel)
-        swipe.direction = .left  // doesn't follow panel position .topLeading in RTL
-        panelController.panel.addGestureRecognizer(swipe)
+        /* Bonus 2: Draggable panel */
+        let pan = UIPanGestureRecognizer(target: self,
+                                         action: .dragPanel)
+        panelController.panel.addGestureRecognizer(pan)
         
         
         /* Unrelated: just adds a blurred background behind the status bar for better look.
@@ -132,6 +133,41 @@ class ViewController: UIViewController {
             panelController.hidePanel()
         } else {
             panelController.showPanel()
+        }
+    }
+    
+    /// Called when the user drags the panel navigation bar with their finger
+    ///
+    /// - Parameter sender: Gesture recognizer responsible for the interaction
+    @objc func dragPanel(_ sender: UIPanGestureRecognizer) {
+        
+        /* This method is configured for a .(…)leading position.
+           Changes required for other positions */
+        
+        let translation    = sender.translation(in: panelController.panelContainer)
+        let direction      = UIApplication.shared.userInterfaceLayoutDirection
+        let minTranslation = panelController.panelContainer.frame.width / 3
+        
+        switch sender.state {
+        case .possible, .began:
+            break
+        case .changed:
+            /* Move panel along with finger */
+            panelController.panelContainer.transform = CGAffineTransform(translationX: translation.x,
+                                                                       y: translation.y)
+        case .ended:
+            /* Hide panel if it has travelled enough to hidden position */
+            if direction == .leftToRight,
+               translation.x < -minTranslation {
+                panelController.hidePanel()
+            } else if direction == .rightToLeft,
+                      translation.x > minTranslation {
+                panelController.hidePanel()
+            } else {
+                panelController.showPanel()   // otherwise reset position
+            }
+        case .cancelled, .failed:
+            panelController.showPanel()       // reset position
         }
     }
     
